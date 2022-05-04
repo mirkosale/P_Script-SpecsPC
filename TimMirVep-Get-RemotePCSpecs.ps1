@@ -28,14 +28,17 @@
     
 
 .OUTPUTS
-	Un fichier avec les différentes informations des PCs et un fichier
+    Un fichier avec les différentes informations des PCs et un fichier
     qui va répertorier les erreurs qui se sont produites.
 	
 .EXAMPLE
-    
+    ./TimMirVep-Get-RemotePCSpecs.ps1 Win10-C1 Win10-C2
+    Return : DATE |Carte mère | Processeur | Carte graphique – VRAM | RAM – Quantité – Type | Disque dur – Espace des PC dans un 
+    fichier logs se trouvant dans un dossier logs.
 
 #>
 
+#Si l'utilisateur n'a pas entré d'arguments
 if (!$args)
 {
     Get-Help $MyInvocation.MyCommand.Path
@@ -49,11 +52,30 @@ else
     #Check for administrator rights
     if ([Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544')
     {
+        #Reprend la date lors de l'exécution du script
+        $date = Get-Date
+        $date = $date.ToString("yyyy-MM-dd-HH-mm-ss")
+
+        #Nom du fichier
+        $file = "logs"
+
+        #Chemin du script
+        $path = (Get-Location).path
+        
+        #Chemin du dossier
+        $logPath = $path + "\logs"
+
+        #Chemin du fichier
+        $filePath = (New-Item -Path $logPath + "\"$date$file -ItemType File).Name
         foreach ($PC in $args)
         {
             try 
             {
-                $remotingSession = New-PSSession -ComputerName $PC 
+                $cred=Get-Credential
+                
+                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred
+
+                Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
             }
 
             catch 
