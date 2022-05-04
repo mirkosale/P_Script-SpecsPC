@@ -15,24 +15,25 @@
  	*****************************************************************************
 
 .SYNOPSIS
-    Obtenir les spÃ©cifications d'une liste de PC Ã  distance
+    Obtenir les spécifications d'une liste de PC à distance
  	
 .DESCRIPTION
-    Ce script une fois exÃ©cutÃ© va rechercher dans toute la liste de PC passÃ©e via 
-    les arguments et va rÃ©cupÃ©rer les informations sur le PC (telles que le 
-    processeur, le nom de la machine, etc.) existants dans le rÃ©seau en vÃ©rifiant
-    qu'ils existent via le nom . Ces informations vont ensuite Ãªtre rÃ©cupÃ©rÃ©es 
-    et stockÃ©es dans un fichier texte et organisÃ©es sous forme de tableau
+    Ce script une fois exécuté va rechercher dans toute la liste de PC passée via 
+    les arguments et va récupérer les informations sur le PC (telles que le 
+    processeur, le nom de la machine, etc.) existants dans le réseau en vérifiant
+    qu'ils existent via le nom . Ces informations vont ensuite être récupérées 
+    et stockées dans un fichier texte et organisées sous forme de tableau. Ces
+    informations vont ensuite être placées dans un dossier de logs avec un nom
+    de fichier unique comme nom de fichier texte.
     
 
 .OUTPUTS
-	
+	Un fichier avec les différentes informations des PCs et un fichier
+    qui va répertorier les erreurs qui se sont produites.
 	
 .EXAMPLE
     
- 	
-.LINK
-    
+
 #>
 
 if (!$args)
@@ -42,7 +43,29 @@ if (!$args)
 }
 else
 {
-    
+
+    Set-Variable -Name 
+
+    #Check for administrator rights
+    if ([Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544')
+    {
+        foreach ($PC in $args)
+        {
+            try 
+            {
+                $remotingSession = New-PSSession -ComputerName $PC 
+            }
+
+            catch 
+            {
+
+            }
+        }
+    } #endif Admin rights check
+    else
+    {
+        Write-Host -ForegroundColor Yellow -BackgroundColor Black "You need to run this script with Administrator Privileges for it to work."
+    }
 } #endif (!$args)
 
 
