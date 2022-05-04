@@ -46,6 +46,8 @@ else
 
     Set-Variable -Name 
 
+    $errors=@()
+
     #Check for administrator rights
     if ([Security.Principal.WindowsIdentity]::GetCurrent().Groups -contains 'S-1-5-32-544')
     {
@@ -58,9 +60,16 @@ else
 
             catch 
             {
-
+                $errors += ""
             }
         }
+
+
+
+        foreach ($error in $errors) {
+            Write-Output $error + "`r`n" >> $filePath
+        }
+
     } #endif Admin rights check
     else
     {
