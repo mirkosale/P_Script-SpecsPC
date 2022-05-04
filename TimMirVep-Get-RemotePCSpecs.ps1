@@ -47,7 +47,7 @@ if (!$args)
 else
 {
 
-    Set-Variable -Name 
+    
 
     $errors=@()
 
@@ -58,17 +58,24 @@ else
         $date = Get-Date
         $date = $date.ToString("yyyy-MM-dd-HH-mm-ss")
 
-        #Nom du fichier
-        $file = "logs"
 
         #Chemin du script
         $path = (Get-Location).path
         
         #Chemin du dossier
-        $logPath = $path + "\logs"
+        $logPath = "$path\logs"
+
+   
+            New-Item -Path $logPath -ItemType Directory -ErrorAction Ignore
+        if (!$?)
+        {
+            $errors += "Le dossier logs existe déjà à cet emplacement"
+        }
 
         #Chemin du fichier
-        $filePath = (New-Item -Path $logPath + "\"$date$file -ItemType File).Name
+        $filePath = "$logPath\$date-logs.txt"
+        $errorPath = "$logPath\$date-errors.txt"
+
         foreach ($PC in $args)
         {
             try 
@@ -82,14 +89,14 @@ else
 
             catch 
             {
-                $errors += ""
+                $errors += "Ca a bug lolo"
             }
         }
 
 
 
         foreach ($error in $errors) {
-            Write-Output $error + "`r`n" >> $filePath
+            Write-Output "$error `r`n" >> $errorPath
         }
 
     } #endif Admin rights check
