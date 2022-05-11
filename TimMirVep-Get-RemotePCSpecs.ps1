@@ -89,7 +89,7 @@ else
 
             if ($remotingSession -eq -not $null)
             {
-                $diskname = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Name}
+                $diskname = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).N}
                 #
                 #https://www.improvescripting.com/how-to-get-disk-size-and-disk-free-space-using-powershell
                 $totalCapacityHDC = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Size/1gb}
