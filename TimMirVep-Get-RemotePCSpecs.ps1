@@ -33,9 +33,9 @@
 	
 .EXAMPLE
     ./TimMirVep-Get-RemotePCSpecs.ps1 Win10-C1 Win10-C2
-    Return : DATE |Carte mère | Processeur | Carte graphique – VRAM | RAM – Quantité – Type | Disque dur – Espace des PC dans un 
-    fichier logs se trouvant dans un dossier logs.
-
+    Return dans un fichier logs se trouvant dans un dossier logs :
+    DATE | Carte mère | Processeur | Carte graphique - VRAM | RAM | Quantité - Type | Disque dur | Espace des PC 
+    Exemple : 20.04.2020 | ASRock Z390 Taichi Ultimate | I9-9900K ? 3.6GHz | RTX2080TI ? 11GB | Corsair ? 32GB ? DDR4 | SSD Samsung EVO 860 ? 500Gb
 #>
 
 #Si l'utilisateur n'a pas entré d'arguments
@@ -46,9 +46,6 @@ if (!$args)
 }
 else
 {
-
-    
-
     $errors=@()
 
     #Check for administrator rights
@@ -78,19 +75,17 @@ else
 
         foreach ($PC in $args)
         {
-            try 
+            try
             {
-                $cred=Get-Credential
-                
-                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred
-
-                Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
+                $cred=Get-Credential -ErrorAction Ignore
+                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred -ErrorAction Ignore
+            }
+            catch
+            {
+                $errors += "La session n'a pas pu être créée sur le PC $PC car les identifiants sont incorrects ou la machine n'existe pas."
             }
 
-            catch 
-            {
-                $errors += "Ca a bug lolo"
-            }
+            Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
         }
 
 
