@@ -53,6 +53,7 @@ else
     {
         #Reprend la date lors de l'exécution du script
         $date = Get-Date
+        $dateSpec = $date.ToString("dd.MM.yyyy")
         $date = $date.ToString("yyyy-MM-dd-HH-mm-ss")
 
 
@@ -85,6 +86,16 @@ else
                 $errors += "La session n'a pas pu être créée sur le PC $PC car les identifiants sont incorrects ou la machine n'existe pas."
             }
 
+<<<<<<< HEAD
+            Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
+            Write-Host "DATE |Carte mère | Processeur | Carte graphique – VRAM | RAM – Quantité – Type | Disque dur – Espace"
+            Write-Host $dateSpec
+            $Manufacturer = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Manufacturer}
+            $Product = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Product}
+            $CPU = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).Name}
+            $Clock = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).MaxClockSpeed}
+
+=======
             #Récupération des informations si la session a pu être établie
 
             if ($remotingSession -eq -not $null)
@@ -103,6 +114,7 @@ else
                 Write-Host notcd
             }
             
+>>>>>>> b29598184ff827dd9885651f8552b81e95592982
         }
 
 
