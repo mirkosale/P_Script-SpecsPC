@@ -60,38 +60,48 @@ else
         $path = (Get-Location).path
         
         #Chemin du dossier
-        $logPath = "$path\logs"
+        $logFolder = "$path\logs"
 
    
-            New-Item -Path $logPath -ItemType Directory -ErrorAction Ignore
+        New-Item -Path $logFolder -ItemType Directory -ErrorAction Ignore
         if (!$?)
         {
             $errors += "Le dossier logs existe déjà à cet emplacement"
         }
 
         #Chemin du fichier
-        $filePath = "$logPath\$date-logs.txt"
-        $errorPath = "$logPath\$date-errors.txt"
+        $logPath = "$logFolder\$date-logs.txt"
+        $errorPath = "$logFolder\$date-errors.txt"
 
         foreach ($PC in $args)
         {
             try
             {
-                $cred=Get-Credential -ErrorAction Ignore
-                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred -ErrorAction Ignore
+                $cred=Get-Credential
+                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred
             }
             catch
             {
                 $errors += "La session n'a pas pu être créée sur le PC $PC car les identifiants sont incorrects ou la machine n'existe pas."
             }
 
-            Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
+            #Récupération des informations si la session a pu être établie
+
+            if ($remotingSession -eq $null)
+            {
+                $name = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name }
+            }
+            else
+            {
+                Write-Host notcd
+            }
+            
         }
 
 
 
         foreach ($error in $errors) {
-            Write-Output "$error `r`n" >> $errorPath
+            Write-Output "$error" >> $errorPath
         }
 
     } #endif Admin rights check
