@@ -61,31 +61,32 @@ else
         $path = (Get-Location).path
         
         #Chemin du dossier
-        $logPath = "$path\logs"
+        $logFolder = "$path\logs"
 
    
-            New-Item -Path $logPath -ItemType Directory -ErrorAction Ignore
+        New-Item -Path $logFolder -ItemType Directory -ErrorAction Ignore
         if (!$?)
         {
             $errors += "Le dossier logs existe déjà à cet emplacement"
         }
 
         #Chemin du fichier
-        $filePath = "$logPath\$date-logs.txt"
-        $errorPath = "$logPath\$date-errors.txt"
+        $logPath = "$logFolder\$date-logs.txt"
+        $errorPath = "$logFolder\$date-errors.txt"
 
         foreach ($PC in $args)
         {
             try
             {
-                $cred=Get-Credential -ErrorAction Ignore
-                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred -ErrorAction Ignore
+                $cred=Get-Credential
+                $remotingSession = New-PSSession -ComputerName $PC -Credential $cred
             }
             catch
             {
                 $errors += "La session n'a pas pu être créée sur le PC $PC car les identifiants sont incorrects ou la machine n'existe pas."
             }
 
+<<<<<<< HEAD
             Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
             Write-Host "DATE |Carte mère | Processeur | Carte graphique – VRAM | RAM – Quantité – Type | Disque dur – Espace"
             Write-Host $dateSpec
@@ -94,12 +95,32 @@ else
             $CPU = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).Name}
             $Clock = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).MaxClockSpeed}
 
+=======
+            #Récupération des informations si la session a pu être établie
+
+            if ($remotingSession -eq -not $null)
+            {
+                $diskname = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Name}
+                #
+                #https://www.improvescripting.com/how-to-get-disk-size-and-disk-free-space-using-powershell
+                $totalCapacityHDC = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Size/1gb}
+
+                #
+                #https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-round-to-specific-decimal-place/
+                $totalCapacityHDC = [math]::Round($totalCapacityHDC, 0)
+            }
+            else
+            {
+                Write-Host notcd
+            }
+            
+>>>>>>> b29598184ff827dd9885651f8552b81e95592982
         }
 
 
 
         foreach ($error in $errors) {
-            Write-Output "$error `r`n" >> $errorPath
+            Write-Output "$error" >> $errorPath
         }
 
     } #endif Admin rights check
