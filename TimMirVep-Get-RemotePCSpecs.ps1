@@ -86,35 +86,37 @@ else
                 $errors += "La session n'a pas pu être créée sur le PC $PC car les identifiants sont incorrects ou la machine n'existe pas."
             }
 
-<<<<<<< HEAD
             Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
             Write-Host "DATE |Carte mère | Processeur | Carte graphique – VRAM | RAM – Quantité – Type | Disque dur – Espace"
             Write-Host $dateSpec
-            $Manufacturer = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Manufacturer}
-            $Product = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Product}
-            $CPU = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).Name}
-            $Clock = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).MaxClockSpeed}
+            
 
-=======
             #Récupération des informations si la session a pu être établie
 
             if ($remotingSession -eq -not $null)
             {
-                $diskname = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).N}
+                $diskModel = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_DiskDrive | where {$_.DeviceID -eq "\\.\PHYSICALDRIVE0"}).Model}
                 #
                 #https://www.improvescripting.com/how-to-get-disk-size-and-disk-free-space-using-powershell
-                $totalCapacityHDC = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Size/1gb}
+                #https://ardamis.com/2012/08/21/getting-a-list-of-logical-and-physical-drives-from-the-command-line/
+                $diskGb = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_DiskDrive | where {$_.DeviceID -eq "\\.\PHYSICALDRIVE0"}).Size/1gb}
 
                 #
                 #https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-round-to-specific-decimal-place/
-                $totalCapacityHDC = [math]::Round($totalCapacityHDC, 0)
+                $diskGb = [string]([math]::Round($diskGb, 0)) + "Gb" 
+
+                $moboManufacturer = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Manufacturer}
+                $moboProduct = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Product}
+                $cpuName = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).Name}
+                $cpuClock = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).MaxClockSpeed}
+
+                
             }
             else
             {
-                Write-Host notcd
+                Write-Host Erreur session
             }
             
->>>>>>> b29598184ff827dd9885651f8552b81e95592982
         }
 
 
