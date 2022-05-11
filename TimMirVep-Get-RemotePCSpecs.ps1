@@ -87,9 +87,16 @@ else
 
             #Récupération des informations si la session a pu être établie
 
-            if ($remotingSession -eq $null)
+            if ($remotingSession -eq -not $null)
             {
-                $name = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name }
+                $diskname = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Name}
+                #
+                #https://www.improvescripting.com/how-to-get-disk-size-and-disk-free-space-using-powershell
+                $totalCapacityHDC = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Size/1gb}
+
+                #
+                #https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-round-to-specific-decimal-place/
+                $totalCapacityHDC = [math]::Round($totalCapacityHDC, 0)
             }
             else
             {
