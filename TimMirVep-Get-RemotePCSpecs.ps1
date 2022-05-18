@@ -107,6 +107,7 @@ else
                 #
                 #https://devblogs.microsoft.com/scripting/powertip-use-powershell-to-round-to-specific-decimal-place/
                 $diskGb = [string]([math]::Round($diskGb, 0)) + "Gb" 
+                $VRAM = Invoke-Command -Session $remotingSession -ScriptBlock{Get-WmiObject Win32_VideoController | select name, AdapterRAM,@{Expression={$_.adapterram/1GB};label="GB"}}
                 
                 $logs += "$PC : $dateSpec | $moboManufacturer $moboProduct | $cpuName - $cpuClock | $gpuName - $gpuVRAM | $ramName - $ramAmount - $ramType | $diskModel - $diskGB"
             # if ($remotingSession -eq $null)
