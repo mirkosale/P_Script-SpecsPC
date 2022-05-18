@@ -106,7 +106,7 @@ else
                 $moboProduct = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_BaseBoard).Product}
                 $cpuName = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).Name}
                 $cpuClock = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).MaxClockSpeed}
-
+                $VRAM = Invoke-Command -Session $remotingSession -ScriptBlock{Get-WmiObject Win32_VideoController | select name, AdapterRAM,@{Expression={$_.adapterram/1GB};label="GB"}}
                 
             }
             else
