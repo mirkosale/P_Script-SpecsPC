@@ -35,7 +35,7 @@
     ./TimMirVep-Get-RemotePCSpecs.ps1 Win10-C1 Win10-C2
     Return dans un fichier logs se trouvant dans un dossier logs :
     DATE | Carte mère | Processeur | Carte graphique - VRAM | RAM | Quantité - Type | Disque dur | Espace des PC 
-    Exemple : 20.04.2020 | ASRock Z390 Taichi Ultimate | I9-9900K ? 3.6GHz | RTX2080TI ? 11GB | Corsair ? 32GB ? DDR4 | SSD Samsung EVO 860 ? 500Gb
+    Exemple : 20.04.2020 | ASRock Z390 Taichi Ultimate | I9-9900K - 3.6GHz | RTX2080TI - 11GB | Corsair - 32GB - DDR4 | SSD Samsung EVO 860 - 500Gb
 #>
 
 #Si l'utilisateur n'a pas entré d'arguments
@@ -86,7 +86,6 @@ else
                 $errors += "La session n'a pas pu être créée sur le PC $PC car les identifiants sont incorrects ou la machine n'existe pas."
             }
 
-<<<<<<< HEAD
             Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_ComputerSystem).Name | Write-Output >> $filePath}
             Write-Host "DATE |Carte mère | Processeur | Carte graphique – VRAM | RAM – Quantité – Type | Disque dur – Espace"
             Write-Host $dateSpec
@@ -95,9 +94,7 @@ else
             $CPU = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).Name}
             $Clock = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-CimInstance CIM_Processor).MaxClockSpeed}
 
-=======
             #Récupération des informations si la session a pu être établie
-
             if ($remotingSession -eq -not $null)
             {
                 $diskname = Invoke-Command -Session $remotingSession -ScriptBlock{(Get-WmiObject Win32_LogicalDisk | where {$_.DeviceID -eq 'C:'}).Name}
@@ -113,8 +110,6 @@ else
             {
                 Write-Host notcd
             }
-            
->>>>>>> b29598184ff827dd9885651f8552b81e95592982
         }
 
 
