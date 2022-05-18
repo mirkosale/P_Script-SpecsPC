@@ -114,7 +114,7 @@ else
             }
             else
             {
-                Write-Host Erreur session
+                $errors += "Erreur session"
             }
             
         }
